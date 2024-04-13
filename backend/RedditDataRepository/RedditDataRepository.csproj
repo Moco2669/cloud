@@ -119,6 +119,7 @@
     <Compile Include="posts\Delete\RemovePost.cs" />
     <Compile Include="posts\Read\ReadPost.cs" />
     <Compile Include="posts\Read\ReadPostAuthor.cs" />
+    <Compile Include="posts\Read\ReadPosts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="users\Create\InsertUser.cs" />
     <Compile Include="users\Read\CheckUserCredentials.cs" />

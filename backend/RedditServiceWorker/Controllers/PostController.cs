@@ -224,20 +224,25 @@ namespace RedditServiceWorker.Controllers
         }
         #endregion
 
-        #region GET ALL POSTS (TODO: DO PAGINATION!!!!)
+        #region GET ALL POSTS WITH OPTIONAL SEARCH QUERY
         [HttpGet]
         [Route("all")]
-        public async Task<IHttpActionResult> All()
+        public async Task<IHttpActionResult> Posts(int pageSize = 10, int pageNumber = 1, string searchKeywords = "")
         {
-            // ovo je samo implementacija da testiram frontend, treba uraditi od 0 kao i za ove gore
-            // posebni fajlovi i lepo read iz storage itd
-            // @danijel
-            // Create a TableQuery object to retrieve all comments for the specified post ID
-            var results = from g in AzureTableStorageCloudAccount.GetCloudTable("posts").CreateQuery<Post>()
-                          where g.PartitionKey == "Post"
-                          select g;
+            try
+            {
+                // Retrieve cloud table instance
+                var cloudTable = AzureTableStorageCloudAccount.GetCloudTable("posts");
 
-            return Ok(results.ToList());
+                // Call the Execute method of ReadPosts class to get paginated and searched posts
+                var posts = await ReadPosts.Execute(cloudTable, searchKeywords, pageSize, pageNumber);
+
+                return Ok(posts);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }
         }
 
         #endregion
