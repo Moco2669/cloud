@@ -13,7 +13,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetch = async () => {
       const response: IPost[] | null = await GetPostsService(id);
-      if (response) {
+      if (response && response.length > 1) {
         setPosts(response);
         setId(response[response.length - 1].Id)
       }
