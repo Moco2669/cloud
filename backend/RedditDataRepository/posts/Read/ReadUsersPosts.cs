@@ -11,34 +11,23 @@ namespace RedditDataRepository.posts.Read
 {
     public class ReadUsersPosts
     {
-        public static async Task<List<Post>> Execute(CloudTable table, string postId, int remaining, string searchKeywords, int sort, DateTime time, string email)
+        public static async Task<List<Post>> Execute(CloudTable table, string postId, int remaining, string searchKeywords, int sort, DateTimeOffset time, string email)
         {
-            TableQuery<Post> query;
-            if (postId.Equals("0") || sort != 0)
-            {
-                query = new TableQuery<Post>().Where(TableQuery.CombineFilters(
+            var query = new TableQuery<Post>().Where(TableQuery.CombineFilters(
                 TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "Post"),
                 TableOperators.And,
                 TableQuery.GenerateFilterCondition("Author", QueryComparisons.Equal, email)));
-            }
-            else
-            {
-                string partitionFilter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "Post");
-                string authorFilter = TableQuery.GenerateFilterCondition("Author", QueryComparisons.Equal, email);
-                string postIdFilter = TableQuery.GenerateFilterCondition("Id", QueryComparisons.LessThan, postId);
-                string combinedFilter = TableQuery.CombineFilters(partitionFilter, TableOperators.And, postIdFilter);
-                combinedFilter = TableQuery.CombineFilters(combinedFilter, TableOperators.And, authorFilter);
-                query = new TableQuery<Post>().Where(combinedFilter);
-            }
 
             List<Post> allPosts = new List<Post>();
             var queryResult = await table.ExecuteQuerySegmentedAsync(query, null);
             allPosts.AddRange(queryResult.Results);
 
             string postTitle;
+            DateTimeOffset timestamp;
             if (postId.Equals("0"))
             {
                 postTitle = "~";
+                timestamp = DateTime.Now;
             }
             else
             {
@@ -51,6 +40,7 @@ namespace RedditDataRepository.posts.Read
                 var currentPost = await table.ExecuteQuerySegmentedAsync(singleQuery, null);
                 var result = currentPost.FirstOrDefault();
                 postTitle = result.Title;
+                timestamp = result.Timestamp;
             }
 
             if (!searchKeywords.Contains('~'))
@@ -70,7 +60,14 @@ namespace RedditDataRepository.posts.Read
                 }
                 if (sort == 0)
                 {
-                    return posts.OrderByDescending(post => post.Timestamp).Take(remaining).ToList();
+                    if (postTitle.Equals("~"))
+                    {
+                        return posts.OrderByDescending(post => post.Timestamp).Take(remaining).ToList();
+                    }
+                    else
+                    {
+                        return posts.OrderByDescending(post => post.Timestamp).SkipWhile(post => !post.Timestamp.Equals(timestamp)).Skip(1).Take(remaining).ToList();
+                    }
                 }
                 else if (sort == 1)
                 {
@@ -98,7 +95,14 @@ namespace RedditDataRepository.posts.Read
 
             if (sort == 0)
             {
-                return allPosts.OrderByDescending(allPost => allPost.Timestamp).Take(remaining).ToList();
+                if (postTitle.Equals("~"))
+                {
+                    return allPosts.OrderByDescending(post => post.Timestamp).Take(remaining).ToList();
+                }
+                else
+                {
+                    return allPosts.OrderByDescending(post => post.Timestamp).SkipWhile(post => !post.Timestamp.Equals(timestamp)).Skip(1).Take(remaining).ToList();
+                }
             }
             else if (sort == 1)
             {
