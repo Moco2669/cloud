@@ -100,17 +100,29 @@ namespace RedditServiceWorker.Controllers
 
         #region COUNT
 
+        /// <summary>
+        /// Retrieves the count of comments on the specified post.
+        /// </summary>
+        /// <param name="postId">The ID of the post for which to count comments.</param>
+        /// <returns>
+        /// An IHttpActionResult containing the count of comments on the post if successful;
+        /// otherwise, an InternalServerError result containing the encountered exception.
+        /// </returns>
         [HttpGet]
         [Route("count/{postId}")]
         public async Task<IHttpActionResult> CountCommentsOnPost(string postId)
         {
             try
             {
+                // Execute the CountComments.Execute method to retrieve the count of comments for the specified post
                 var result = await CountComments.Execute(AzureTableStorageCloudAccount.GetCloudTable("comments"), postId);
+
+                // Return an OK result containing the count of comments on the post
                 return Ok(result.Count);
             }
             catch (Exception e)
             {
+                // Return an InternalServerError result containing the encountered exception if an error occurs
                 return InternalServerError(e);
             }
         }

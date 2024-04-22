@@ -8,10 +8,24 @@ using System;
 
 namespace RedditDataRepository.posts.Read
 {
+    /// <summary>
+    /// Provides functionality to retrieve and filter posts from a cloud table.
+    /// </summary>
     public class ReadPosts
     {
+        /// <summary>
+        /// Executes a query to retrieve and filter posts from a cloud table.
+        /// </summary>
+        /// <param name="table">The cloud table containing the posts.</param>
+        /// <param name="postId">The ID of the last loaded post.</param>
+        /// <param name="remaining">The number of posts to return.</param>
+        /// <param name="searchKeywords">Keywords to filter posts by.</param>
+        /// <param name="sort">The sorting criterion for the posts.</param>
+        /// <param name="time">A timestamp to filter posts by.</param>
+        /// <returns>A list of posts matching the specified criteria.</returns>
         public static async Task<List<Post>> Execute(CloudTable table, string postId, int remaining, string searchKeywords, int sort, DateTimeOffset time)
         {
+            // Retrieve all posts from the cloud table
             var query = new TableQuery<Post>().Where(TableQuery.GenerateFilterCondition
                 ("PartitionKey", QueryComparisons.Equal, "Post"));
 
@@ -19,11 +33,12 @@ namespace RedditDataRepository.posts.Read
             var queryResult = await table.ExecuteQuerySegmentedAsync(query, null);
             allPosts.AddRange(queryResult.Results);
 
+            // Retrieve details of the latest post if postId is provided
             string postTitle;
             DateTimeOffset timestamp;
             if (postId.Equals("0"))
             {
-                postTitle = "~";
+                postTitle = "~"; // Placeholder value for non-existent post title
                 timestamp = DateTime.Now;
             }
             else
@@ -38,6 +53,7 @@ namespace RedditDataRepository.posts.Read
                 postTitle = result.Title;
             }
 
+            // Filter posts based on search keywords
             if (!searchKeywords.Contains('~'))
             {
                 List<Post> posts = new List<Post>();
@@ -53,7 +69,9 @@ namespace RedditDataRepository.posts.Read
                         }
                     }
                 }
-                if(sort == 0)
+
+                // Sort and return filtered posts based on specified criteria
+                if (sort == 0)
                 {
                     if (postTitle.Equals("~"))
                     {
@@ -88,7 +106,8 @@ namespace RedditDataRepository.posts.Read
                 }
             }
 
-            if(sort == 0)
+            // Return posts without filtering with searchKeywords
+            if (sort == 0)
             {
                 if (postTitle.Equals("~"))
                 {
