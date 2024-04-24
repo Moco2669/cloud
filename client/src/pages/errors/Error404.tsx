@@ -1,10 +1,11 @@
 import React from "react";
 import Navbar from "../../components/navbar/Navbar";
+import ISearchBarQueryProps from "../../interfaces/search/ISearchBarQuery";
 
-const Error404: React.FC = () => {
+const Error404: React.FC <ISearchBarQueryProps>= ({query, setQuery}) => {
   return (
     <>
-      <Navbar />
+      <Navbar query={query} setQuery={setQuery}/>
       <div className="grid mt-16 place-content-center bg-white px-4">
         <div className="text-center">
             <img src="/images/reddit404b.png" className="w-full h-4/6" />

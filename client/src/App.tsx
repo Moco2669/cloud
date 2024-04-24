@@ -16,13 +16,13 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home query={query} setQuery={setQuery} />} />
-          <Route path="/post/:id" element={<Post />} />
-          <Route path="/create" element={<Create />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/post/:id" element={<Post query={query} setQuery={setQuery}/>} />
+          <Route path="/create" element={<Create query={query} setQuery={setQuery}/>} />
+          <Route path="/profile" element={<Profile query={query} setQuery={setQuery}/>} />
           <Route path="/login" element={<Login query={query} setQuery={setQuery} />} />
           <Route path="/signup" element={<Register query={query} setQuery={setQuery} />} />
 
-          <Route path="*" element={<Error404 />} />
+          <Route path="*" element={<Error404 query={query} setQuery={setQuery}/>} />
         </Routes>
       </Router>
     </>

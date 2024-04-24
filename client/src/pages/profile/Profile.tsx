@@ -9,8 +9,9 @@ import { removeTokenFromLocalStorage } from "../../services/jwt/JWTTokenizationS
 import { ValidateUpdateData } from "../../validators/users/validate_new_user_info";
 import UpdateUserInformationService from "../../services/users/update/UpdateService";
 import LoadingSpinner from "../../components/spinner/LoadingSpinner";
+import ISearchBarQueryProps from "../../interfaces/search/ISearchBarQuery";
 
-const Profile: React.FC = () => {
+const Profile: React.FC <ISearchBarQueryProps>= ({query, setQuery}) => {
   const { email, token, isLoggedIn, setEmail, setToken } = useAuth();
   const [userData, setUserData] = useState<IUser | null>(emptyUser);
   const [image, setImage] = useState<File | null>(null);
@@ -133,7 +134,7 @@ const Profile: React.FC = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar query={query} setQuery={setQuery}/>
       {loading ? (
         <LoadingSpinner />
       ) : (
