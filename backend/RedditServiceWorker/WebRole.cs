@@ -16,8 +16,16 @@ namespace RedditServiceWorker
         {
             try
             {
-                new HealthServer();
-                Trace.TraceInformation("HealthMonitor server is running");
+                // isto ko kod healthmonitora
+                string roleId = RoleEnvironment.CurrentRoleInstance.Id;
+                int startIndex = roleId.LastIndexOf("_IN_") + 4;
+                int endIndex = roleId.Length;
+                string instanceIndexStr = roleId.Substring(startIndex, endIndex - startIndex);
+
+                int instanceIndex = int.Parse(instanceIndexStr);
+                int port = 6000 + instanceIndex;
+                new HealthServer(port);
+                Trace.TraceInformation($"HealthMonitor server for RedditService {instanceIndex + 1} is running on port {port}");
             }
             catch (Exception e)
             {

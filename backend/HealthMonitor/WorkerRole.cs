@@ -19,6 +19,9 @@ namespace HealthMonitor
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
+        private IHealthMonitoring proxy;
+        private string redditServiceEndpoint;
+
         public override void Run()
         {
             Trace.TraceInformation("HealthMonitor is running");
@@ -35,6 +38,16 @@ namespace HealthMonitor
 
         public override bool OnStart()
         {
+            // dizvucem id instance da bi jedan healthMonitor pratio jedan RedditService a drugi drugi
+            string roleId = RoleEnvironment.CurrentRoleInstance.Id;
+            int startIndex = roleId.LastIndexOf("_IN_") + 4;
+            int endIndex = roleId.Length;
+            string instanceIndexStr = roleId.Substring(startIndex, endIndex - startIndex);
+
+            int instanceIndex = int.Parse(instanceIndexStr);
+            int port = 6000 + instanceIndex;
+            redditServiceEndpoint = $"net.tcp://localhost:{port}/HealthMonitoring";
+
             // Set the maximum number of concurrent connections
             ServicePointManager.DefaultConnectionLimit = 12;
 
@@ -60,23 +73,21 @@ namespace HealthMonitor
             Trace.TraceInformation("HealthMonitor has stopped");
         }
 
-        private IHealthMonitoring proxy;
         public void Connect()
         {
             var binding = new NetTcpBinding();
-            ChannelFactory<IHealthMonitoring> factory = new
-            ChannelFactory<IHealthMonitoring>(binding, new
-            EndpointAddress("net.tcp://localhost:6000/HealthMonitoring"));
+            ChannelFactory<IHealthMonitoring> factory = new ChannelFactory<IHealthMonitoring>(binding, new EndpointAddress(redditServiceEndpoint));
             proxy = factory.CreateChannel();
         }
 
         private async Task RunAsync(CancellationToken cancellationToken)
         {
+            Connect();
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
                 {
-                    Connect();
                     proxy.IAmAlive();
                     Trace.TraceInformation("Service is alive.");
                 }
