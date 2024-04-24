@@ -16,7 +16,7 @@ namespace RedditDataRepository.classes.Posts
         public Subscription(string postId, string email)
         {
             PartitionKey = "Subscription";
-            RowKey = email + postId;
+            RowKey = postId + email;
             PostId = postId;
             Email = email;
         }

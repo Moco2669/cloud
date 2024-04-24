@@ -116,6 +116,7 @@
     <Compile Include="comments\Delete\RemoveComment.cs" />
     <Compile Include="comments\Delete\RemoveComments.cs" />
     <Compile Include="comments\Read\CountComments.cs" />
+    <Compile Include="comments\Read\ReadComment.cs" />
     <Compile Include="comments\Read\ReadCommentAuthor.cs" />
     <Compile Include="comments\Read\ReadComments.cs" />
     <Compile Include="posts\Create\InsertPost.cs" />
@@ -123,9 +124,11 @@
     <Compile Include="posts\Read\ReadPost.cs" />
     <Compile Include="posts\Read\ReadPostAuthor.cs" />
     <Compile Include="posts\Read\ReadPosts.cs" />
+    <Compile Include="posts\Read\ReadSubscriptions.cs" />
     <Compile Include="posts\Read\ReadUsersPosts.cs" />
     <Compile Include="posts\Update\SubscribeToPost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="queues\NotificationQueue.cs" />
     <Compile Include="users\Create\InsertUser.cs" />
     <Compile Include="users\Read\CheckUserCredentials.cs" />
     <Compile Include="users\Read\IsUserExists.cs" />

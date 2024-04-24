@@ -40,6 +40,14 @@
     <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NotificationService\NotificationService.csproj">
+      <Name>NotificationService</Name>
+      <Project>{659ead4f-86b4-4ce0-9912-c5f31ed1fba7}</Project>
+      <Private>True</Private>
+      <RoleType>Worker</RoleType>
+      <RoleName>NotificationService</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
+    </ProjectReference>
     <ProjectReference Include="..\RedditServiceWorker\RedditServiceWorker.csproj">
       <Name>RedditServiceWorker</Name>
       <Project>{0bf7dac0-9d6e-4571-b009-7f5861fac700}</Project>
@@ -50,9 +58,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NotificationServiceContent\" />
     <Folder Include="RedditServiceWorkerContent\" />
   </ItemGroup>
   <ItemGroup>
+    <DiagnosticsConfiguration Include="NotificationServiceContent\diagnostics.wadcfgx" />
     <DiagnosticsConfiguration Include="RedditServiceWorkerContent\diagnostics.wadcfgx" />
   </ItemGroup>
   <!-- Import the target files for this project template -->

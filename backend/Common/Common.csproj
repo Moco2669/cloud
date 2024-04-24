@@ -121,6 +121,7 @@
     <Compile Include="auth\JWT\JWTHandler\JwtAuthenticationFilter.cs" />
     <Compile Include="auth\JWT\JWTStorage\KeyStorage\JWTKeyStorage.cs" />
     <Compile Include="cloud\account\AzureTableStorageCloudAccount.cs" />
+    <Compile Include="cloud\queue\AzureQueueHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

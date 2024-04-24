@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.9.34723.18
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.34114.132
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "RedditService", "RedditService\RedditService.ccproj", "{64B7A31B-40DE-4C8A-81BE-3E6F08F2C915}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedditDataRepository", "RedditDataRepository\RedditDataRepository.csproj", "{8EA83E5D-3354-478E-AAA4-6FCCB5A9CBB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{3319454F-4841-4707-A279-82BD5DBF3658}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService", "NotificationService\NotificationService.csproj", "{659EAD4F-86B4-4CE0-9912-C5F31ED1FBA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{3319454F-4841-4707-A279-82BD5DBF3658}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3319454F-4841-4707-A279-82BD5DBF3658}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3319454F-4841-4707-A279-82BD5DBF3658}.Release|Any CPU.Build.0 = Release|Any CPU
+		{659EAD4F-86B4-4CE0-9912-C5F31ED1FBA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{659EAD4F-86B4-4CE0-9912-C5F31ED1FBA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{659EAD4F-86B4-4CE0-9912-C5F31ED1FBA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{659EAD4F-86B4-4CE0-9912-C5F31ED1FBA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
