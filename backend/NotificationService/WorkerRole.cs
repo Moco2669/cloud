@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Queue;
 using RedditDataRepository.queues;
+using Common.cloud.account;
 
 namespace NotificationService
 {
@@ -44,6 +45,8 @@ namespace NotificationService
 
             bool result = base.OnStart();
 
+            AzureTableStorageCloudAccount account = new AzureTableStorageCloudAccount();
+
             Trace.TraceInformation("NotificationService has been started");
 
             return result;
@@ -75,7 +78,11 @@ namespace NotificationService
                     continue;
                 }
                 // Send notifications to email
-                List<string> emails = CommentService.GetPostEmails(commentId);
+                List<string> emails = await CommentService.GetPostEmails(commentId);
+                foreach(string email in emails)
+                {
+                    await CommentService.SendEmail(email);
+                }
             }
         }
     }
