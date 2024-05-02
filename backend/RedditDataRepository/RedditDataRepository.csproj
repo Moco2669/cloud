@@ -108,6 +108,7 @@
   <ItemGroup>
     <Compile Include="blobs\images\AzureBlobStorage.cs" />
     <Compile Include="classes\Comments\Comment.cs" />
+    <Compile Include="classes\Logs\EmailLog.cs" />
     <Compile Include="classes\Posts\Post.cs" />
     <Compile Include="classes\Posts\Subscription.cs" />
     <Compile Include="classes\Users\User.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="comments\Read\ReadComment.cs" />
     <Compile Include="comments\Read\ReadCommentAuthor.cs" />
     <Compile Include="comments\Read\ReadComments.cs" />
+    <Compile Include="logs\Create\InsertEmailLog.cs" />
     <Compile Include="posts\Create\InsertPost.cs" />
     <Compile Include="posts\Delete\RemovePost.cs" />
     <Compile Include="posts\Read\ReadPost.cs" />

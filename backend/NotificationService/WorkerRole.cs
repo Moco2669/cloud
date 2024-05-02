@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage.Queue;
 using RedditDataRepository.queues;
 using Common.cloud.account;
+using RedditDataRepository.logs.Create;
+using RedditDataRepository.classes.Logs;
+using RedditDataRepository.comments.Read;
 
 namespace NotificationService
 {
@@ -37,9 +40,19 @@ namespace NotificationService
                 }
                 // Send notifications to email
                 List<string> emails = await CommentService.GetPostEmails(commentId);
+                string commentText = (await ReadComment.Run(AzureTableStorageCloudAccount.GetCloudTable("comments"), commentId)).Content;
+                int numOfEmailsSent = 0;
                 foreach (string email in emails)
                 {
-                    await CommentService.SendEmail(email);
+                    if(await CommentService.SendEmail(email, commentText))
+                    {
+                        ++numOfEmailsSent;
+                    }
+                }
+                // TODO: Save date and time and number of emails sent
+                if(!(await InsertEmailLog.Execute(AzureTableStorageCloudAccount.GetCloudTable("emailLogs"), new EmailLog(DateTime.Now, commentId, numOfEmailsSent))))
+                {
+                    Trace.TraceError("Error inserting email log into table.");
                 }
             }
             try

@@ -35,12 +35,12 @@ namespace NotificationService
             return post.Id;
         }
 
-        public static async Task SendEmail(string email)
+        public static async Task<bool> SendEmail(string email, string commentText)
         {
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             string domain = ".mailgun.org";
-            string auth = "";
+            string auth = "API_KEY";
             string data = "";
             string jsonContent = "{" +
                 "" +
@@ -49,25 +49,27 @@ namespace NotificationService
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic",
-                    Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"api: \"\"")));
+                    Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"api: {auth}")));
 
                 var content = new FormUrlEncodedContent(new[]
                 {
-                new KeyValuePair<string, string>("from", $"Excited User <mailgun@{domain}>"),
-                new KeyValuePair<string, string>("to", email),
-                new KeyValuePair<string, string>("subject", "You missed on Le Reddit"),
-                new KeyValuePair<string, string>("text", "nesto")
-            });
+                    new KeyValuePair<string, string>("from", $"Excited User <mailgun@{domain}>"),
+                    new KeyValuePair<string, string>("to", email),
+                    new KeyValuePair<string, string>("subject", "You missed on Le Reddit"),
+                    new KeyValuePair<string, string>("text", $"New comment on the post you subscribed: {commentText}")
+                });
 
                 var response = await client.PostAsync($"https://api.mailgun.net/v3/{domain}/messages", content);
 
                 if (response.IsSuccessStatusCode)
                 {
                     Trace.TraceInformation("Email sent successfully.");
+                    return true;
                 }
                 else
                 {
                     Trace.TraceError($"Failed to send email. Status code: {response.StatusCode} {response.ReasonPhrase} {response.Content}");
+                    return false;
                 }
             }
         }
