@@ -178,7 +178,12 @@ const Post: React.FC<IPostProp> = ({ postId }) => {
   };
 
   const HandleSubscribe = async () =>{
-    await Subscribe(postId, email ?? "", token?.token ?? "");
+    const success: boolean = await Subscribe(postId, email ?? "", token?.token ?? "");
+    if(success){
+      console.log("Uspesno");
+    } else {
+      console.log("Nece nesto");
+    }
   }
 
   return (
@@ -195,7 +200,7 @@ const Post: React.FC<IPostProp> = ({ postId }) => {
               />
             </div>
             <div className="flex items-center">
-            <SubscribeButton onClick={() => {HandleSubscribe}} />
+            <SubscribeButton onClick={HandleSubscribe} />
               {isDeletePostAvailable && (
                 <TrashButton onClick={ConfirmPostDelete} />
               )}

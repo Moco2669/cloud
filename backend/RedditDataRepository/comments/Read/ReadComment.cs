@@ -12,8 +12,8 @@ namespace RedditDataRepository.comments.Read
     {
         public static async Task<Comment> Run(CloudTable table, string commentId)
         {
-            var tableQeury = new TableQuery<Comment>().Where(TableQuery.CombineFilters(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "Comment"), TableOperators.And, TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, commentId)));
-            var result = tableQeury.Execute();
+            var tableQuery = new TableQuery<Comment>().Where(TableQuery.CombineFilters(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "Comment"), TableOperators.And, TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, commentId)));
+            var result = table.ExecuteQuery(tableQuery);
             if (result != null)
             {
                 Comment comment = result.Count() == 0 ? null : result.First();

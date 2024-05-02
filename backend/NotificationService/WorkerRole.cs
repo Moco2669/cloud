@@ -20,11 +20,28 @@ namespace NotificationService
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
-        public override void Run()
+        public async override void Run()
         {
             Trace.TraceInformation("NotificationService is running");
 
             CloudQueue queue = AzureQueueHelper.GetQueue("notifications");
+            while (true)
+            {
+                // Trace.TraceInformation("Working");
+
+                string commentId = NotificationQueue.DequeueComment(queue);
+                if (commentId == null)
+                {
+                    await Task.Delay(1000);
+                    continue;
+                }
+                // Send notifications to email
+                List<string> emails = await CommentService.GetPostEmails(commentId);
+                foreach (string email in emails)
+                {
+                    await CommentService.SendEmail(email);
+                }
+            }
             try
             {
                 this.RunAsync(this.cancellationTokenSource.Token, queue).Wait();
@@ -67,9 +84,9 @@ namespace NotificationService
         private async Task RunAsync(CancellationToken cancellationToken, CloudQueue queue)
         {
             // TODO: Replace the following with your own logic.
-            while (!cancellationToken.IsCancellationRequested)
+            /*while (!cancellationToken.IsCancellationRequested)
             {
-                Trace.TraceInformation("Working");
+                // Trace.TraceInformation("Working");
 
                 string commentId = NotificationQueue.DequeueComment(queue);
                 if (commentId == null)
@@ -83,7 +100,7 @@ namespace NotificationService
                 {
                     await CommentService.SendEmail(email);
                 }
-            }
+            }*/
         }
     }
 }

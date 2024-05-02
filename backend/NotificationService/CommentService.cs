@@ -7,10 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
-using System.Net.Http.Json;
+//using System.Text.Json;
+//using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace NotificationService
@@ -36,6 +37,8 @@ namespace NotificationService
 
         public static async Task SendEmail(string email)
         {
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             string domain = ".mailgun.org";
             string auth = "";
             string data = "";
@@ -46,7 +49,7 @@ namespace NotificationService
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic",
-                    Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"api:\"\"")));
+                    Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes($"api: \"\"")));
 
                 var content = new FormUrlEncodedContent(new[]
                 {
@@ -64,7 +67,7 @@ namespace NotificationService
                 }
                 else
                 {
-                    Trace.TraceError($"Failed to send email. Status code: {response.StatusCode}");
+                    Trace.TraceError($"Failed to send email. Status code: {response.StatusCode} {response.ReasonPhrase} {response.Content}");
                 }
             }
         }
