@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Availability";
+
+    // Get the uptime ratios for the past 1 hour and 24 hours
+    double oneHourRatio = ViewBag.OneHourOkCount / (double)ViewBag.OneHourTotalCount;
+    double twentyFourHoursRatio = ViewBag.TwentyFourHoursOkCount / (double)ViewBag.TwentyFourHoursTotalCount;
+
+    // Calculate the width of the bars based on the uptime ratios
+    string oneHourBarWidth = $"{oneHourRatio * 100}%";
+    string twentyFourHoursBarWidth = $"{twentyFourHoursRatio * 100}%";
+}
+
+<h2>Availability</h2>
+
+<div>
+    <h3>Availability for the past 1 hour:</h3>
+    <div style="background-color: red; width: 200px; height: 20px;">
+        <div style="background-color: green; width: @oneHourBarWidth; height: 100%; float: left;"></div>
+        <div style="width: 100%; float: right; text-align: center;">@String.Format("{0:P}", oneHourRatio)</div>
+    </div>
+</div>
+
+<div>
+    <h3>Availability for the past 24 hours:</h3>
+    <div style="background-color: red; width: 200px; height: 20px;">
+        <div style="background-color: green; width: @twentyFourHoursBarWidth; height: 100%; float: left;"></div>
+        <div style="width: 100%; float: right; text-align: center;">@String.Format("{0:P}", twentyFourHoursRatio)</div>
+    </div>
+</div>
+
+<div>
+    <input type="button" value="Refresh" onclick="location.reload();" />
+</div>
