@@ -1,144 +1,62 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
+using Microsoft.WindowsAzure.Storage.Table;
 using RedditDataRepository.classes.Posts;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System;
 
 namespace RedditDataRepository.posts.Read
 {
     /// <summary>
-    /// Provides functionality to retrieve and filter posts from a cloud table.
+    /// Provides methods to read posts from an Azure Storage Table.
     /// </summary>
-    public class ReadPosts
+    public class ReadPost
     {
         /// <summary>
-        /// Executes a query to retrieve and filter posts from a cloud table.
+        /// Retrieves a post from the specified Azure Storage Table by its partition key and ID.
         /// </summary>
-        /// <param name="table">The cloud table containing the posts.</param>
-        /// <param name="postId">The ID of the last loaded post.</param>
-        /// <param name="remaining">The number of posts to return.</param>
-        /// <param name="searchKeywords">Keywords to filter posts by.</param>
-        /// <param name="sort">The sorting criterion for the posts.</param>
-        /// <param name="time">A timestamp to filter posts by.</param>
-        /// <returns>A list of posts matching the specified criteria.</returns>
-        public static async Task<List<Post>> Execute(CloudTable table, string postId, int remaining, string searchKeywords, int sort, DateTimeOffset time)
+        /// <param name="table">The CloudTable object representing the Azure Storage Table.</param>
+        /// <param name="partitionKey">The partition key identifying the post.</param>
+        /// <param name="postId">The ID of the post to retrieve.</param>
+        /// <returns>
+        /// A Task that, when completed, returns the retrieved Post object.
+        /// If the post is not found or an error occurs, the method returns null.
+        /// </returns>
+        public static async Task<Post> Run(CloudTable table, string partitionKey, string postId)
         {
-            // Retrieve all posts from the cloud table
-            var query = new TableQuery<Post>().Where(TableQuery.GenerateFilterCondition
-                ("PartitionKey", QueryComparisons.Equal, "Post"));
+            try
+            {
+                // Check if the table is null
+                if (table == null)
+                    return null;
 
-            List<Post> allPosts = new List<Post>();
-            var queryResult = await table.ExecuteQuerySegmentedAsync(query, null);
-            allPosts.AddRange(queryResult.Results);
+                // Create a query to retrieve the post based on partition key and ID
+                var query = new TableQuery<Post>().Where(
+                    TableQuery.CombineFilters(
+                        TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey),
+                        TableOperators.And,
+                        TableQuery.GenerateFilterCondition("Id", QueryComparisons.Equal, postId)));
 
-            // Retrieve details of the latest post if postId is provided
-            string postTitle;
-            DateTimeOffset timestamp;
-            if (postId.Equals("0"))
-            {
-                postTitle = "~"; // Placeholder value for non-existent post title
-                timestamp = DateTime.Now;
-            }
-            else
-            {
-                var singleQuery = new TableQuery<Post>().Where(TableQuery.CombineFilters(
-                TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "Post"),
-                TableOperators.And,
-                TableQuery.GenerateFilterCondition("Id", QueryComparisons.Equal, postId)));
-                var currentPost = await table.ExecuteQuerySegmentedAsync(singleQuery, null);
-                var result = currentPost.FirstOrDefault();
-                timestamp = result.Timestamp;
-                postTitle = result.Title;
-            }
+                TableContinuationToken continuationToken = null;
 
-            // Filter posts based on search keywords
-            if (!searchKeywords.Contains('~'))
-            {
-                List<Post> posts = new List<Post>();
-                string[] searchTerms = searchKeywords.ToLower().Split(' ');
-                foreach(Post p in allPosts)
+                do
                 {
-                    foreach(string s in searchTerms)
-                    {
-                        string title = Regex.Replace(p.Title.ToLower(), @"\s+", "");
-                        if (title.Contains(s))
-                        {
-                            posts.Add(p);
-                        }
-                    }
-                }
+                    // Execute the query segment asynchronously
+                    var segment = await table.ExecuteQuerySegmentedAsync(query, continuationToken);
+                    continuationToken = segment.ContinuationToken;
 
-                // Sort and return filtered posts based on specified criteria
-                if (sort == 0)
-                {
-                    if (postTitle.Equals("~"))
+                    // Iterate through the results and return the post if found
+                    foreach (var entity in segment.Results)
                     {
-                        return posts.OrderByDescending(post => post.Timestamp).Take(remaining).ToList();
+                        if (entity.Id == postId)
+                            return entity;
                     }
-                    else
-                    {
-                        return posts.OrderByDescending(post => post.Timestamp).SkipWhile(post => !post.Timestamp.Equals(timestamp)).Skip(1).Take(remaining).ToList();
-                    }
-                }
-                else if(sort == 1)
-                {
-                    if (postTitle.Equals("~"))
-                    {
-                        return posts.OrderBy(post => post.Title).Take(remaining).ToList();
-                    }
-                    else
-                    {
-                        return posts.OrderBy(post => post.Title).SkipWhile(post => !post.Title.Equals(postTitle)).Skip(1).Where(post => post.Timestamp < time).Take(remaining).ToList();
-                    }
-                }
-                else
-                {
-                    if (postTitle.Equals("~"))
-                    {
-                        return posts.OrderByDescending(post => post.Title).Take(remaining).ToList();
-                    }
-                    else
-                    {
-                        return posts.OrderByDescending(post => post.Title).SkipWhile(post => !post.Title.Equals(postTitle)).Skip(1).Where(post => post.Timestamp < time).Take(remaining).ToList();
-                    }
-                }
-            }
+                } while (continuationToken != null);
 
-            // Return posts without filtering with searchKeywords
-            if (sort == 0)
-            {
-                if (postTitle.Equals("~"))
-                {
-                    return allPosts.OrderByDescending(post => post.Timestamp).Take(remaining).ToList();
-                }
-                else
-                {
-                    return allPosts.OrderByDescending(post => post.Timestamp).SkipWhile(post => !post.Timestamp.Equals(timestamp)).Skip(1).Take(remaining).ToList();
-                }
+                // Return null if no matching post is found
+                return null;
             }
-            else if(sort == 1)
+            catch
             {
-                if (postTitle.Equals("~"))
-                {
-                    return allPosts.OrderBy(post => post.Title).Take(remaining).ToList();
-                }
-                else
-                {
-                    return allPosts.OrderBy(post => post.Title).SkipWhile(post => !post.Title.Equals(postTitle)).Skip(1).Where(post => post.Timestamp < time).Take(remaining).ToList();
-                }
-            }
-            else
-            {
-                if (postTitle.Equals("~"))
-                {
-                    return allPosts.OrderByDescending(post => post.Title).Take(remaining).ToList();
-                }
-                else
-                {
-                    return allPosts.OrderByDescending(post => post.Title).SkipWhile(post => !post.Title.Equals(postTitle)).Skip(1).Where(post => post.Timestamp < time).Take(remaining).ToList();
-                }
+                // Return null if an error occurs
+                return null;
             }
         }
     }

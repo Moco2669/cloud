@@ -1,4 +1,4 @@
-﻿using Common.auth.guard;
+using Common.auth.guard;
 using Common.cloud.account;
 using RedditDataRepository.blobs.images;
 using RedditDataRepository.classes.Comments;

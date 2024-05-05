@@ -5,7 +5,9 @@ import IToken from "../../interfaces/auth/jwt/IToken";
  * @param data The token object containing the JWT token.
  */
 const saveTokenToLocalstorage = (data: IToken): void => {
-  localStorage.setItem("token", data.token);
+  if(data && data.token) {
+    localStorage.setItem("token", data.token);
+  }
 };
 
 /**
