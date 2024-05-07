@@ -227,33 +227,55 @@ namespace RedditServiceWorker.Controllers
         #endregion
 
         #region GET POSTS
-        
+
+        /// <summary>
+        /// Retrieves posts based on pagination parameters such as post ID, search keywords, sorting criteria, and time.
+        /// </summary>
+        /// <param name="postId">The ID of the post to start pagination from.</param>
+        /// <param name="searchKeywords">Keywords to filter posts by.</param>
+        /// <param name="sort">The sorting criterion for the posts.</param>
+        /// <param name="time">The timestamp indicating the starting point for pagination.</param>
+        /// <returns>
+        /// An IHttpActionResult containing a list of posts retrieved based on pagination parameters if successful;
+        /// otherwise, an InternalServerError result containing the encountered exception.
+        /// </returns>
         [HttpGet]
         [Route("{postId}/{searchKeywords}/pagination/{sort}/{time}")]
         public async Task<IHttpActionResult> Pagination(string postId, string searchKeywords, int sort, string time)
         {
             try
             {
+                // Convert the provided timestamp string to a DateTimeOffset object
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(time));
-                DateTime newtime = dateTimeOffset.UtcDateTime; 
+                DateTime newtime = dateTimeOffset.UtcDateTime;
+
+                // Initialize remaining number of posts to be retrieved and a list to store retrieved posts
                 int remaining = 1;
                 List<Post> posts = new List<Post>();
-                
-                while(remaining > 0)
+
+                // Perform pagination until remaining posts to retrieve is zero
+                while (remaining > 0)
                 {
+                    // Retrieve posts based on pagination parameters
                     var currentPosts = await ReadPosts.Execute(AzureTableStorageCloudAccount.GetCloudTable("posts"), postId, remaining, searchKeywords, sort, newtime);
-                    if(currentPosts.Count == 0)
+
+                    // If no more posts are retrieved, break out of the pagination loop
+                    if (currentPosts.Count == 0)
                     {
                         break;
                     }
+
+                    // Add retrieved posts to the list and update remaining count
                     posts.AddRange(currentPosts);
                     remaining -= currentPosts.Count();
                 }
 
+                // Return an OK result containing the list of retrieved posts
                 return Ok(posts);
             }
             catch (Exception e)
             {
+                // Return an InternalServerError result containing the encountered exception if an error occurs
                 return InternalServerError(e);
             }
         }
@@ -262,6 +284,19 @@ namespace RedditServiceWorker.Controllers
 
         #region GET USERS POSTS
 
+
+        /// <summary>
+        /// Retrieves posts by a single user based on pagination parameters such as post ID, search keywords, sorting criteria, and time.
+        /// </summary>
+        /// <param name="postId">The ID of the post to start pagination from.</param>
+        /// <param name="searchKeywords">Keywords to filter posts by.</param>
+        /// <param name="sort">The sorting criterion for the posts.</param>
+        /// <param name="time">The timestamp indicating the starting point for pagination.</param>
+        /// <param name="encodedEmail">Email address of user whose posts to retrieve.</param>
+        /// <returns>
+        /// An IHttpActionResult containing a list of posts retrieved based on pagination parameters if successful;
+        /// otherwise, an InternalServerError result containing the encountered exception.
+        /// </returns>
         [HttpGet]
         [Route("{postId}/{searchKeywords}/userPosts/{sort}/{time}/{encodedEmail}")]
         [JwtAuthenticationFilter]
@@ -269,26 +304,37 @@ namespace RedditServiceWorker.Controllers
         {
             try
             {
+                // Convert the provided timestamp string to a DateTimeOffset object
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(time));
                 DateTime newtime = dateTimeOffset.UtcDateTime;
+
+                // Initialize remaining number of posts to be retrieved and a list to store retrieved posts
                 int remaining = 1;
                 List<Post> posts = new List<Post>();
 
+                // Perform pagination until remaining posts to retrieve is zero
                 while (remaining > 0)
                 {
+                    // Retrieve posts based on pagination parameters and user
                     var currentPosts = await ReadUsersPosts.Execute(AzureTableStorageCloudAccount.GetCloudTable("posts"), postId, remaining, searchKeywords, sort, newtime, HttpUtility.UrlDecode(encodedEmail));
+
+                    // If no more posts are retrieved, break out of the pagination loop
                     if (currentPosts.Count == 0)
                     {
                         break;
                     }
+
+                    // Add retrieved posts to the list and update remaining count
                     posts.AddRange(currentPosts);
                     remaining -= currentPosts.Count();
                 }
 
+                // Return an OK result containing the list of retrieved posts
                 return Ok(posts);
             }
             catch (Exception e)
             {
+                // Return an InternalServerError result containing the encountered exception if an error occurs
                 return InternalServerError(e);
             }
         }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.34114.132
+# Visual Studio 15
+VisualStudioVersion = 15.0.34729.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "RedditService", "RedditService\RedditService.ccproj", "{64B7A31B-40DE-4C8A-81BE-3E6F08F2C915}"
 EndProject
@@ -11,7 +11,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedditDataRepository", "Red
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{3319454F-4841-4707-A279-82BD5DBF3658}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService", "NotificationService\NotificationService.csproj", "{659EAD4F-86B4-4CE0-9912-C5F31ED1FBA7}"
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "HealthMonitoringService", "HealthMonitoringService\HealthMonitoringService.ccproj", "{EE576471-C1D8-4F6B-9035-BC6B42D45986}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthMonitor", "HealthMonitor\HealthMonitor.csproj", "{F159E928-79CF-4C2E-AF0A-CDF79FC33BBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminToolsConsoleApp", "AdminToolsConsoleApp\AdminToolsConsoleApp.csproj", "{67CF08FE-5AC0-45FC-A4B8-E0D572A3193E}"
+EndProject
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "HealthStatusService", "HealthStatusService\HealthStatusService.ccproj", "{A37BE881-87BF-4EF0-8916-D3336C547061}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthStatus", "HealthStatus\HealthStatus.csproj", "{A03D0D09-9FC1-46BB-A8AE-EC0B02D6089D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +43,26 @@ Global
 		{3319454F-4841-4707-A279-82BD5DBF3658}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3319454F-4841-4707-A279-82BD5DBF3658}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3319454F-4841-4707-A279-82BD5DBF3658}.Release|Any CPU.Build.0 = Release|Any CPU
-		{659EAD4F-86B4-4CE0-9912-C5F31ED1FBA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{659EAD4F-86B4-4CE0-9912-C5F31ED1FBA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{659EAD4F-86B4-4CE0-9912-C5F31ED1FBA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{659EAD4F-86B4-4CE0-9912-C5F31ED1FBA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE576471-C1D8-4F6B-9035-BC6B42D45986}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE576471-C1D8-4F6B-9035-BC6B42D45986}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE576471-C1D8-4F6B-9035-BC6B42D45986}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE576471-C1D8-4F6B-9035-BC6B42D45986}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F159E928-79CF-4C2E-AF0A-CDF79FC33BBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F159E928-79CF-4C2E-AF0A-CDF79FC33BBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F159E928-79CF-4C2E-AF0A-CDF79FC33BBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F159E928-79CF-4C2E-AF0A-CDF79FC33BBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67CF08FE-5AC0-45FC-A4B8-E0D572A3193E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67CF08FE-5AC0-45FC-A4B8-E0D572A3193E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67CF08FE-5AC0-45FC-A4B8-E0D572A3193E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67CF08FE-5AC0-45FC-A4B8-E0D572A3193E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A37BE881-87BF-4EF0-8916-D3336C547061}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A37BE881-87BF-4EF0-8916-D3336C547061}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A37BE881-87BF-4EF0-8916-D3336C547061}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A37BE881-87BF-4EF0-8916-D3336C547061}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A03D0D09-9FC1-46BB-A8AE-EC0B02D6089D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A03D0D09-9FC1-46BB-A8AE-EC0B02D6089D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A03D0D09-9FC1-46BB-A8AE-EC0B02D6089D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A03D0D09-9FC1-46BB-A8AE-EC0B02D6089D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

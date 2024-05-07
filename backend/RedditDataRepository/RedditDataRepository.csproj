@@ -47,7 +47,7 @@
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.3.2.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Storage, Version=9.3.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsAzure.Storage.9.3.3\lib\net45\Microsoft.WindowsAzure.Storage.dll</HintPath>
+      <HintPath>..\packages\WindowsAzure.Storage.9.3.2\lib\net45\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -108,29 +108,29 @@
   <ItemGroup>
     <Compile Include="blobs\images\AzureBlobStorage.cs" />
     <Compile Include="classes\Comments\Comment.cs" />
-    <Compile Include="classes\Logs\EmailLog.cs" />
     <Compile Include="classes\Posts\Post.cs" />
-    <Compile Include="classes\Posts\Subscription.cs" />
     <Compile Include="classes\Users\User.cs" />
     <Compile Include="classes\Votes\Vote.cs" />
     <Compile Include="comments\Create\InsertComment.cs" />
     <Compile Include="comments\Delete\RemoveComment.cs" />
     <Compile Include="comments\Delete\RemoveComments.cs" />
     <Compile Include="comments\Read\CountComments.cs" />
-    <Compile Include="comments\Read\ReadComment.cs" />
     <Compile Include="comments\Read\ReadCommentAuthor.cs" />
     <Compile Include="comments\Read\ReadComments.cs" />
-    <Compile Include="logs\Create\InsertEmailLog.cs" />
     <Compile Include="posts\Create\InsertPost.cs" />
     <Compile Include="posts\Delete\RemovePost.cs" />
     <Compile Include="posts\Read\ReadPost.cs" />
     <Compile Include="posts\Read\ReadPostAuthor.cs" />
     <Compile Include="posts\Read\ReadPosts.cs" />
-    <Compile Include="posts\Read\ReadSubscriptions.cs" />
     <Compile Include="posts\Read\ReadUsersPosts.cs" />
-    <Compile Include="posts\Update\SubscribeToPost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="queues\NotificationQueue.cs" />
+    <Compile Include="queues\AdminNotificationQueue.cs" />
+    <Compile Include="tables\AlertEmailRepository.cs" />
+    <Compile Include="tables\entities\AlertEmail.cs" />
+    <Compile Include="tables\entities\HealthCheck.cs" />
+    <Compile Include="tables\HealthCheckRepository.cs" />
+    <Compile Include="tables\interfaces\IAlertEmailRepository.cs" />
+    <Compile Include="tables\interfaces\IHealthCheckRepository.cs" />
     <Compile Include="users\Create\InsertUser.cs" />
     <Compile Include="users\Read\CheckUserCredentials.cs" />
     <Compile Include="users\Read\IsUserExists.cs" />
