@@ -8,7 +8,9 @@ using RedditDataRepository.comments.Read;
 using RedditDataRepository.posts.Create;
 using RedditDataRepository.posts.Delete;
 using RedditDataRepository.posts.Read;
+using RedditDataRepository.posts.Update;
 using RedditDataRepository.Posts.Read;
+using RedditDataRepository.users.Read;
 using RedditServiceWorker.Models.post;
 using System;
 using System.Collections.Generic;
@@ -340,13 +342,55 @@ namespace RedditServiceWorker.Controllers
         #endregion
 
         #region SUBSCRIBE
-
+        /// <summary>
+        /// Subscribes a user to a post
+        /// </summary>
+        /// <param name="postId">The ID of the post</param>
+        /// <param name="encodedEmail">Email of the user who wants to subscribe</param>
+        /// <returns>
+        /// IHttpActionResult representing the result of the insert subscription operation.
+        /// Returns Ok() if post exists, user exists, and if operation is completed successfully.
+        /// Returns Unauthorized() if the email from the token and email in the request don't match.
+        /// Returns BadRequest() if the user with associated email is not found.
+        /// Returns NotFound() if the post doesn't exist.
+        /// Returns InternalServerError() if an unexpected error occurs during the subscription process.
+        /// </returns>
         [HttpGet]
         [Route("{postId}/{encodedEmail}/subscribe")]
         [JwtAuthenticationFilter]
         public async Task<IHttpActionResult> Subscribe(string postId, string encodedEmail)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Check if post exists by checking for its author
+                string author = await ReadPostAuthor.Execute(AzureTableStorageCloudAccount.GetCloudTable("posts"), postId);
+                if (author == null)
+                {
+                    return NotFound();
+                }
+                // Check if user exists
+                string email = HttpUtility.UrlDecode(encodedEmail);
+                if(!(await IsUserExists.RunCheckAsync(AzureTableStorageCloudAccount.GetCloudTable("users"), email)))
+                {
+                    return BadRequest();
+                }
+                // Checking if user is who he represents he is
+                if(!ResourceGuard.RunCheck(ActionContext, email))
+                {
+                    return Unauthorized();
+                }
+                // Adding subscription 
+                var insertResult = await SubscribeToPost.Execute(AzureTableStorageCloudAccount.GetCloudTable("subscriptions"), postId, email);
+                if (insertResult)
+                {
+                    return Ok();
+                }
+                return NotFound();
+            }
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }
         }
 
         #endregion

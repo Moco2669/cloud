@@ -1,10 +1,13 @@
 ﻿using Common.auth.guard;
 using Common.cloud.account;
+using Common.cloud.queue;
+using Microsoft.WindowsAzure.Storage.Queue;
 using RedditDataRepository.classes.Comments;
 using RedditDataRepository.comments.Create;
 using RedditDataRepository.comments.Delete;
 using RedditDataRepository.comments.Read;
 using RedditDataRepository.Comments.Read;
+using RedditDataRepository.queues;
 using RedditServiceWorker.Models.comment;
 using System;
 using System.Threading.Tasks;
@@ -37,6 +40,9 @@ namespace RedditServiceWorker.Controllers
                 if (insert_result)
                 {
                     // Comment was successfully added to the table
+                    // Insert new comment into Queue for NotificationService to process
+                    CloudQueue queue = AzureQueueHelper.GetQueue("notifications");
+                    NotificationQueue.EnqueueComment(queue, comment);
                     return Ok(); // Return 200 OK
                 }
                 else
