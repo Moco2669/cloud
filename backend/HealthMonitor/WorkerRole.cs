@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.ServiceModel;
 using System.Threading;
@@ -153,7 +154,15 @@ namespace HealthMonitor
                 LogHealthCheck("NOT_OK");
                 Trace.TraceWarning($"{service} Service not alive anymore!");
                 CloudQueue queue = AdminNotificationQueue.GetQueue("adminnotificationqueue");
-                AdminNotificationQueue.EnqueueMessage(queue, message);
+
+                IEnumerable<CloudQueueMessage> peekedMessages = queue.PeekMessages(32);
+
+                bool messageExists = peekedMessages.Any(m => m.AsString == message);
+
+                if (!messageExists)
+                {
+                    AdminNotificationQueue.EnqueueMessage(queue, message);
+                }
             }
         }
 
