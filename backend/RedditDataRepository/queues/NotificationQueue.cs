@@ -21,7 +21,7 @@ namespace RedditDataRepository.queues
             CloudQueueMessage message = queue.GetMessage();
             if (message != null)
             {
-                // queue.DeleteMessage(message); OBRISACE SE PORUKA ALI SADA NEKA OVDE ZBOG TESTIRANJA
+                queue.DeleteMessage(message);
                 return message.AsString;
             }
             return null;

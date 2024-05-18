@@ -45,10 +45,10 @@ namespace NotificationService
             Trace.TraceError("Trying to send email to " + email);
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            string api_key = "API_KEY";
+            string api_key = "EMAIL_API_KEY";
             string api_secret = "API_SECRET";
             var client = new SendGridClient(api_key);
-            var fromEmail = new EmailAddress("LeReddit@lereddit.com", "LeReddit");
+            var fromEmail = new EmailAddress("prededb@gmail.com", "FTN Projekat"); //"LeReddit@lereddit.com", "LeReddit"
             var toEmail = new EmailAddress(email, email.Split('@')[0]);
             var text = commentText;
             var msg = MailHelper.CreateSingleEmail(fromEmail, toEmail, "You missed on LeReddit", text, text);

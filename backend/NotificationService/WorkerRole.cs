@@ -91,7 +91,7 @@ namespace NotificationService
                         ++numOfEmailsSent;
                     }
                 }
-                // TODO: Save date and time and number of emails sent
+                // Save date and time and number of emails sent
                 if (!(await InsertEmailLog.Execute(AzureTableStorageCloudAccount.GetCloudTable("emailLogs"), new EmailLog(DateTime.Now, commentId, numOfEmailsSent))))
                 {
                     Trace.TraceError("Error inserting email log into table.");
