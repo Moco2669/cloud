@@ -7,13 +7,8 @@ using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Common;
-using Common.cloud.queue;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;
-using Microsoft.WindowsAzure.Storage.Table;
 using RedditDataRepository.queues;
 using RedditDataRepository.tables;
 using RedditDataRepository.tables.entities;
@@ -26,9 +21,11 @@ namespace HealthMonitor
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
         private List<string> redditServiceEndpoints = new List<string>();
+        private List<string> notificationServiceEndpoints = new List<string>();
         private static HealthCheckRepository repository = new HealthCheckRepository();
         private static AdminToolServer AdminToolServer;
         private int instanceIndex;
+        private string service;
 
         public override void Run()
         {
@@ -53,6 +50,15 @@ namespace HealthMonitor
             string instanceIndexStr = roleId.Substring(startIndex, endIndex - startIndex);
             instanceIndex = int.Parse(instanceIndexStr);
 
+            if (instanceIndex == 0)
+            {
+                service = "Reddit";
+            }
+            if (instanceIndex == 1)
+            {
+                service = "Notification";
+            }
+
             int portBase = 6000;
             int redditServiceCount = 2;
             for (int i = 0; i < redditServiceCount; i++)
@@ -60,6 +66,15 @@ namespace HealthMonitor
                 int port = portBase + i;
                 string endpoint = $"net.tcp://localhost:{port}/HealthMonitoring";
                 redditServiceEndpoints.Add(endpoint);
+            }
+
+            portBase = 6002;
+            int notificationServiceCount = 3;
+            for(int i = 0; i < notificationServiceCount; i++)
+            {
+                int port = portBase + i;
+                string endpoint = $"net.tcp://localhost:{port}/HealthMonitoring";
+                notificationServiceEndpoints.Add(endpoint);
             }
 
             // Set the maximum number of concurrent connections
@@ -113,6 +128,14 @@ namespace HealthMonitor
                     }
                 }
 
+                if(instanceIndex == 1)
+                {
+                    foreach(var endpoint in notificationServiceEndpoints)
+                    {
+                        Connect(endpoint);
+                    }
+                }
+
                 await Task.Delay(new Random().Next(1000, 5001), cancellationToken);
             }
         }
@@ -123,29 +146,28 @@ namespace HealthMonitor
             {
                 proxy.IAmAlive();
                 LogHealthCheck("OK");
-                Trace.TraceInformation("Service is alive.");
+                Trace.TraceInformation($"{service} Service is alive.");
             }
             catch
             {
+                string message = $"{service} Service is down!";
                 LogHealthCheck("NOT_OK");
-                Trace.TraceWarning("Service not alive anymore!");
-                //CloudQueue queue = AzureQueueHelper.GetQueue("adminnotificationqueue");
-                //AdminNotificationQueue.EnqueueMessage(queue, "Alert admin emails!");
+                Trace.TraceWarning($"{service} Service not alive anymore!");
+                CloudQueue queue = AdminNotificationQueue.GetQueue("adminnotificationqueue");
+
+                IEnumerable<CloudQueueMessage> peekedMessages = queue.PeekMessages(32);
+
+                bool messageExists = peekedMessages.Any(m => m.AsString == message);
+
+                if (!messageExists)
+                {
+                    AdminNotificationQueue.EnqueueMessage(queue, message);
+                }
             }
         }
 
         private void LogHealthCheck(string status)
         {
-            string service = "";
-            if(instanceIndex == 0)
-            {
-                service = "Reddit";
-            }
-            if(instanceIndex == 1)
-            {
-                service = "Notification";
-            }
-
             DateTime timestamp = DateTime.UtcNow;
             HealthCheck healthCheckEntity = new HealthCheck(timestamp.ToString("yyyyMMddHHmmssfff"), status, service);
             repository.Create(healthCheckEntity);

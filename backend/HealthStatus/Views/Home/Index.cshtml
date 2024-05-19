@@ -1,33 +1,56 @@
 ﻿@{
     ViewBag.Title = "Availability";
-
-    // Get the uptime ratios for the past 1 hour and 24 hours
-    double oneHourRatio = ViewBag.OneHourOkCount / (double)ViewBag.OneHourTotalCount;
-    double twentyFourHoursRatio = ViewBag.TwentyFourHoursOkCount / (double)ViewBag.TwentyFourHoursTotalCount;
-
-    // Calculate the width of the bars based on the uptime ratios
-    string oneHourBarWidth = $"{oneHourRatio * 100}%";
-    string twentyFourHoursBarWidth = $"{twentyFourHoursRatio * 100}%";
 }
 
-<h2>Availability</h2>
-
-<div>
-    <h3>Availability for the past 1 hour:</h3>
-    <div style="background-color: red; width: 200px; height: 20px;">
-        <div style="background-color: green; width: @oneHourBarWidth; height: 100%; float: left;"></div>
-        <div style="width: 100%; float: right; text-align: center;">@String.Format("{0:P}", oneHourRatio)</div>
+<h2>Availability for the past 1 hour:</h2>
+<div class="progress" style="width: 575px">
+    <div class="progress-bar bg-success" role="progressbar" style="width: @ViewBag.OneHourRatio%">
+        @ViewBag.OneHourRatio%
     </div>
 </div>
 
-<div>
-    <h3>Availability for the past 24 hours:</h3>
-    <div style="background-color: red; width: 200px; height: 20px;">
-        <div style="background-color: green; width: @twentyFourHoursBarWidth; height: 100%; float: left;"></div>
-        <div style="width: 100%; float: right; text-align: center;">@String.Format("{0:P}", twentyFourHoursRatio)</div>
-    </div>
+<h2>Availability for the past 24 hours:</h2>
+<div class="d-flex justify-content-between align-items-center">
+    @for (int i = 0; i < ViewBag.TwentyFourHoursRatios.Count; i++)
+    {
+        double ratio = ViewBag.TwentyFourHoursRatios[i];
+        string color = ratio == 0 ? "bg-danger" : (ratio >= 0.5 ? "bg-success" : "bg-warning");
+        DateTime hour = DateTime.UtcNow.AddHours(-24 + i + 1);
+        string tooltip = $"{hour.ToString("yyyy-MM-dd HH:mm")} - {ratio:P}";
+
+        <div class="stick @color" data-toggle="tooltip" title="@tooltip"></div>
+    }
 </div>
 
 <div>
-    <input type="button" value="Refresh" onclick="location.reload();" />
+    <input type="button" value="Refresh" onclick="location.reload();" class="btn btn-primary" />
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
+<style>
+    .stick {
+        height: 40px;
+        width: 10px;
+        margin-right: 10px;
+        display: inline-block;
+    }
+
+    .bg-danger {
+        background-color: red;
+    }
+
+    .bg-warning {
+        background-color: yellow;
+    }
+
+    .bg-success {
+        background-color: green;
+    }
+</style>

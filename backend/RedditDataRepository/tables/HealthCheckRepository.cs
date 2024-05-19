@@ -150,6 +150,8 @@ namespace RedditDataRepository.tables
                 .Where(
                     TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "HealthCheck")
                     + " and " +
+                    TableQuery.GenerateFilterCondition("Service", QueryComparisons.Equal, "Reddit")
+                    + " and " +
                     TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.GreaterThanOrEqual, startRowKey)
                     + " and " +
                     TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.LessThanOrEqual, endRowKey)
